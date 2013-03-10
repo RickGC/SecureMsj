@@ -4,6 +4,9 @@ SecureMsj
 SecureMsj es una pequeña herramienta para Encriptar/Codificar, Desencriptar/Decodificar mensajes via AES y Base64
 para transmitirlos y recibirlos en internet de forma segura.
 
+Autor: Ricardo Gallegos
+Corre en: Windows, Linux y Mac OS X
+
 No solo nosotros los hackers necesitamos transmitir datos de forma segura atraves de internet
 tambien en ambito de general de personas lo requieren y
 aveces es necesario enviar mensajes con datos altamente sensibles como una contraseña, el numero de una tarjeta de
