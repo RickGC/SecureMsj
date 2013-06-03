@@ -34,6 +34,9 @@ __web__   = ['']                         #
 import sys # Usamos la libreria para identificar la plataforma operativa
 import base64 # Libreria para la codificacion de mensajes
 import time # Libreria para control de tiempo
+import subprocess # Libreria para ejecutar comandos
+import string # Libreria ocupada para generar caracteres (numeros letras simbolos
+import random # Libreria para aleotorizar strings y poder generar claves
 from time import sleep # De la lib time solo importamos el modulo sleep, para hacer el delay
 
 sistema_operativo = sys.platform # Identificamos la plataforma operativa en el que se usa la aplicacion
@@ -51,7 +54,7 @@ except ImportError:                # Si al importarla se recibe un error es que 
         if sistema_operativo == "darwin":
             print "[-] Descargue e instale la siguiente libreria..."
             sleep(1.5)
-            subprocess.Popen("open https://rudix.googlecode.com/files/pycrypto-2.4.1-0.pkg", shell=True).wait()
+            subprocess.Popen("open https://code.google.com/p/rudix/downloads/detail?name=pycrypto-2.6-0.pkg", shell=True).wait()
             raw_input("[*] Una ves instalada presione [Enter] para continuar...")
         # Si es GNU/Linux bajamos el siguiente paquete
         elif sistema_operativo == "linux2":
@@ -63,7 +66,7 @@ except ImportError:                # Si al importarla se recibe un error es que 
         elif sistema_operativo == "win32":
             print "[-] Descargue e instale la siguiente libreria..."
             sleep(1.5)
-            subprocess.Popen('start "%ProgramFiles%\Internet Explorer\iexplore.exe" "http://www.voidspace.org.uk/cgi-bin/voidspace/downman.py?file=pycrypto-2.0.1.win32-py2.5.zip"', shell=True).wait()
+            subprocess.Popen('start "%ProgramFiles%\Internet Explorer\iexplore.exe" "http://www.voidspace.org.uk/python/modules.shtml#pycrypto"', shell=True).wait()
             raw_input("[*] Una ves instalada presione [Enter] para continuar...")
         # Si no es ningun sistema operativo compatible terminamos.
         else:
@@ -105,7 +108,7 @@ def Generador_Key():
 def setKey():
     key = raw_input("[-] Ingrese la Key a usar para todo el cifrado AES256 de la sesion: ")
     while len(key) != 32: # Mientras el tamanio la variable key sea diferente de 32 caracteres, vuelve a pedir la variable key.
-    	print "[!] La key no contiene 32 caracteres"
+		print "[!] La key no contiene 32 caracteres"
 		print "[!] La key debe tener 32 caracteres para poder encriptar con AES256"
 		print "[!] Purebe deneuvo..."
 		sleep(.5)
@@ -144,10 +147,10 @@ def encriptarTEXTO():
     
     # Variable para devolver el mensaje encriptado
     aes = CodificarAES(cipher, texto)
-    print chr(27)+"[1;32m"+"[*] "+chr(27)+"[0m"+"Este es tu mensaje enciptado via AES:\n"
+    print "[*] Este es tu mensaje enciptado via AES:\n"
     print str(aes)
     print ""
-    raw_input(chr(27)+"[1;32m"+"[*] "+chr(27)+"[0m"+"Presiona [ENTER] para continuar.")
+    raw_input("[*] Presiona [ENTER] para continuar.")
 
 
 # Metodo de Desencriptacion Texto
