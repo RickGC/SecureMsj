@@ -71,118 +71,237 @@ except ImportError:                # Si al importarla se recibe un error es que 
             raw_input("[*] Presiona [ENTER] para terminar...")
             sys.exit()
 
-# Variable de 32 caracteres aleatorios usada para cifrar el mensaje; Usted debe modificar esta variable a su gusto siempre y cuando sea de 32 caracteres la "key"
-# Y recompilar este codigo para que sea unica y segura la encripcion! Puede recompilar el codigo con:
-# "py2exe" (http://www.py2exe.org/)  o con  "pyinstaller" (http://www.pyinstaller.org/)
-key = "y=wfpZJ+Jm!.F$bK'mo8Em+8gQgkp[~>"
+global KeySecreta # Variable global para setear una Keytemporal
+KeySecreta = ""
 
-# Modulo de Encriptacion AES
-def encriptarAES(key):
-        # Recibimos el texto a encriptar
-        texto = raw_input("[+] Ingrese el texto a encriptar con AES: ")
-    
-        # El caracter utilizado para el relleno - con un cifrado de bloques tales como AES, el valor a
-        # Cifrar debe ser un múltiplo de block_size de longitud. Este caracter se
-        # Utiliza para asegurarse de que su valor es siempre un múltiplo de block_size
-        PADDING = '{'
-        
-        # Tamaño del bloque de encripcion para el objeto de la variable cipher; podria ser 16, 24 o 32 para AES
-        BLOCK_SIZE = 32
-    
-        # Funcion para rellenar el texto a cifrar
-        pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
-        
-        a = 50 * 5
-        
-        # Linea de codigo para Encriptar y codificar un string (nuestro mensaje)
-        # Encriptamos con AES; Codificamos con Base64.
-        CodificarAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
-        
-        # Genera el cifrado inyectandole la variable "key"
-        cipher = AES.new(key)
-    
-        # Variable para devolver el mensaje encriptado
-        aes = CodificarAES(cipher, texto)
-        print "[*] Este es tu mensaje enciptado via AES:\n"
-        print str(aes)
-        print ""
-        raw_input("[*] Presiona [ENTER] para continuar.")
+# Metodo para recibir la variable key
+def RecibirKey():
+    if KeySecreta == "":
+        print  "[!] Nota: La Key debe ser de 32 caracteres, para AES-256"
+        global key
+        key = raw_input("[!] Ingrese la Key a usar, para trabajar: ") # Recibimos la variable Key
+        while len(key) != 32: # Mientras el tamanio la variable key sea diferente de 32 caracteres, vuelve a pedir la variable key.
+            print "[!] La key no contiene 32 caracteres"
+            print "[!] La key debe tener 32 caracteres para poder encriptar con AES256"
+            print "[!] Purebe deneuvo..."
+            sleep(.5)
+            key = raw_input("[-] Reingrese la Key a usar, para trabajar: ")
+    else:
+        key = KeySecreta
 
-# Modulo de Desencriptacion AES
-def desencriptarAES(key):
-        # Recibimos el texto a desencriptar
-        texto = raw_input("[+] Ingrese el texto a desencriptar con AES: ")
-    
-        # El caracter utilizado para el relleno - con un cifrado de bloques tales como AES, el valor a
-        # Cifrar debe ser un múltiplo de block_size de longitud. Este caracter se
-        # Utiliza para asegurarse de que su valor es siempre un múltiplo de block_size
-        PADDING = '{'
-        
-        # Tamaño del bloque de encripcion para el objeto de la variable cipher; podria ser 16, 24 o 32 para AES
-        BLOCK_SIZE = 32
-        
-        # Funcion para rellenar el texto a cifrar
-        pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
-        
-        a = 50 * 5
-        
-        # Linea de codigo para Desencriptar y decodificar un string (nuestro mensaje)
-        # Desencriptamos con AES; Decodificamos con Base64.
-        DecodificarAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
-        
-        # Genera el cifrado inyectandole la variable "key"
-        cipher = AES.new(key)
-    
-        # Variable para devolver el mensaje encriptado
-        aes = DecodificarAES(cipher, texto)
-        print "[*] Este es tu mensaje desenciptado via AES:\n"
-        print str(aes)
-        print ""
-        raw_input("[*] Presiona [ENTER] para continuar.")
 
-# Modulo para imprimir nuestro banner ;)
+# Metodo para generar cadenas de caracteres aleatorios (Generador de Keys)
+def Generador_Key():
+    tam = 32 # la variable tam sera el numero de caracteres para la key de AES-256
+    caracteres = string.ascii_letters+string.digits+string.punctuation # La variable caracteres podra contener letras numeros o simbolos especiales
+    key_generada = ''.join([random.choice(caracteres) for _ in range(tam)]) # Genera la aleatorizacion de numeros letras y caracteres especiales
+    print "[*] Se genero esta nueva Key:\n"
+    print key_generada
+    print ""
+    raw_input("[*] Presiona [ENTER] para continuar.")
+
+
+# Metodo para establecer una key temporal
+def setKey():
+    key = raw_input("[-] Ingrese la Key a usar para todo el cifrado AES256 de la sesion: ")
+    while len(key) != 32: # Mientras el tamanio la variable key sea diferente de 32 caracteres, vuelve a pedir la variable key.
+    	print "[!] La key no contiene 32 caracteres"
+		print "[!] La key debe tener 32 caracteres para poder encriptar con AES256"
+		print "[!] Purebe deneuvo..."
+		sleep(.5)
+		key = raw_input("[-] Reingrese la Key a usar, para trabajar: ")
+    global KeySecreta
+    KeySecreta = key
+    print "[*] La Key se configuro correctamente."
+    raw_input("[*] Presiona [ENTER] para continuar.")
+
+# Metodo de Encriptacion de Texto
+def encriptarTEXTO():
+    # Recibimos la key atraves del metodo
+    RecibirKey()
+    # Recibimos el texto a encriptar
+    texto = raw_input("[-] Ingrese el texto a encriptar con AES: ")
+    
+    # El caracter utilizado para el relleno - con un cifrado de bloques tales como AES, el valor a
+    # Cifrar debe ser un múltiplo de block_size de longitud. Este caracter se
+    # Utiliza para asegurarse de que su valor es siempre un múltiplo de block_size
+    PADDING = '{'
+	
+    # Tamaño del bloque de encripcion para el objeto de la variable cipher; podria ser 16, 24 o 32 para AES
+    BLOCK_SIZE = 32
+    
+    # Funcion para rellenar el texto a cifrar
+    pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
+	
+    a = 50 * 5
+	
+    # Linea de codigo para Encriptar y codificar un string (nuestro mensaje)
+    # Encriptamos con AES; Codificamos con Base64.
+    CodificarAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
+	
+    # Genera el cifrado inyectandole la variable "key"
+    cipher = AES.new(key)
+    
+    # Variable para devolver el mensaje encriptado
+    aes = CodificarAES(cipher, texto)
+    print chr(27)+"[1;32m"+"[*] "+chr(27)+"[0m"+"Este es tu mensaje enciptado via AES:\n"
+    print str(aes)
+    print ""
+    raw_input(chr(27)+"[1;32m"+"[*] "+chr(27)+"[0m"+"Presiona [ENTER] para continuar.")
+
+
+# Metodo de Desencriptacion Texto
+def desencriptarTEXTO():
+    # Recibimos la Key atraves del metodo
+    RecibirKey()
+    # Recibimos el texto a desencriptar
+    texto = raw_input("[-] Ingrese el texto a desencriptar con AES: ")
+    
+    # El caracter utilizado para el relleno - con un cifrado de bloques tales como AES, el valor a
+    # Cifrar debe ser un múltiplo de block_size de longitud. Este caracter se
+    # Utiliza para asegurarse de que su valor es siempre un múltiplo de block_size
+    PADDING = '{'
+	
+    # Tamaño del bloque de encripcion para el objeto de la variable cipher; podria ser 16, 24 o 32 para AES
+    BLOCK_SIZE = 32
+	
+    # Funcion para rellenar el texto a cifrar
+    pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
+	
+    a = 50 * 5
+	
+    # Linea de codigo para Desencriptar y decodificar un string (nuestro mensaje)
+    # Desencriptamos con AES; Decodificamos con Base64.
+    DecodificarAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
+	
+    # Genera el cifrado inyectandole la variable "key"
+    cipher = AES.new(key)
+    
+    # Variable para devolver el mensaje encriptado
+    aes = DecodificarAES(cipher, texto)
+    print "[*] Este es tu mensaje desenciptado via AES:\n"
+    print str(aes)
+    print ""
+    raw_input("[*] Presiona [ENTER] para continuar.")
+
+
+def encriptarARCHIVO():
+    # Recibimos la key ataraves del metodo
+    RecibirKey()
+    archivo = raw_input("[-] Ingrese la ruta del archivo a encriptar con AES256: ")
+    archivo = file(archivo, "r")
+    archivo = archivo.read()
+	
+    PADDING = '{'
+	
+    BLOCK_SIZE = 32
+	
+    pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
+	
+    a = 50 * 5
+	
+	
+    EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
+	
+    cipher = AES.new(key)
+	
+    aes = EncodeAES(cipher, archivo)
+	
+    creararchivo = file("archivo_encriptado.docx", "w")
+    creararchivo.write(aes)
+    creararchivo.close()
+    print "[*] Tu archivo fue encriptado correctamente!"
+    raw_input("[*] Presiona [ENTER] para continuar.")
+
+
+def desencriptarARCHIVO():
+    # Recibimos la key ataraves del metodo
+    RecibirKey()
+    archivo = raw_input("[-] Ingrese la ruta del archivo a desencriptar con AES256: ")
+    archivo = file(archivo, "r")
+    archivo = archivo.read()
+    PADDING = '{'
+	
+    BLOCK_SIZE = 32
+	
+    pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
+	
+    a = 50 * 5
+	
+    DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
+	
+    cipher = AES.new(key)
+	
+    aes = DecodeAES(cipher, archivo)
+    creararchivo = file("archivo_desencriptado.docx", "w")
+    creararchivo.write(aes)
+    creararchivo.close()
+    print "Se desencripto correctamente este archivo!"
+
+
+# Metodo para imprimir nuestro banner ;)
 def banner():
-        print """
-         ____                             __  __      _
-        / ___|  ___  ___ _   _ _ __ ___  |  \/  |___ (_)
-        \___ \ / _ \/ __| | | | '__/ _ \ | |\/| / __|| |
-         ___) |  __/ (__| |_| | | |  __/ | |  | \__ \| |
-        |____/ \___|\___|\__,_|_|  \___| |_|  |_|___// |
-                                                    |__/
-Encripta Mensajes importantes via Advanced Encryption Standard (AES)
-Corre en: [Mac OS X, Linux y Windows]
-Autor: Ricardo Gallegos *RickGC*
-e-mail: RickGC[at]gmail[dot]com\n"""
+	print """
+		 ____                             __  __      _
+		/ ___|  ___  ___ _   _ _ __ ___  |  \/  |___ (_)
+		\___ \ / _ \/ __| | | | '__/ _ \ | |\/| / __|| |
+		 ___) |  __/ (__| |_| | | |  __/ | |  | \__ \| |
+		|____/ \___|\___|\__,_|_|  \___| |_|  |_|___// |
+		                                            |__/"""
+	print """
+	      Encripta/Desencripta y Codifica/Decodifica
+	  texto, mensajes, documentos o archivos importantes
+	Via Advanced Encryption Standard 256 & Base64 algorithm
+	Corre en:OS X 10.5-10.8, Linux Kernel 2-3 y Windows XP/Vista/7/8
+	             Autor: Ricardo Gallegos *RickGC*
+	                     Version: [2.0]"""
 
 # Menu Principal
 def menu():
-        try:
-            banner()
-            print "[>] 1. Deseo encriptar un mensaje.    =)"
-            print "[>] 2. Deseo desencriptar un mensaje. =)"
-            print "[>] 3. Me quiero largar de aqui.     >=("
-            op = raw_input("\n[-] Porfavor elija una opcion: ")
+	try:
+		banner()
+		print "\n[>] 1. Encriptar un mensaje."
+		print "[>] 2. Desencriptar un mensaje."
+		print "[>] 3. Encriptar un archivo."
+		print "[>] 4. Desencriptar un archivo."
+		print "[>] 5. Generar una Key."
+		print "[>] 6. Establecer una Key temporal"
+		print "\n[>] 00. Regresar al menu anterior."
+		op = raw_input("\n[-] Porfavor elija una opcion: ")
         
-            if op == "1":
-               encriptarAES(key)
-               menu()
-            elif op == "2":
-                 desencriptarAES(key)
-                 menu()
-            elif op == "3":
-                 print "[!] Saliendo..."
-                 sleep(.5)
-                 sys.exit()
-            else:
-                 print "[!] Opcion incorrecta pruebe denuevo...\n"
-                 sleep(1)
-                 menu()
+		if op == "1":
+			encriptarTEXTO()
+			menu()
+		elif op == "2":
+			desencriptarTEXTO()
+			menu()
+		elif op == "3":
+			encriptarARCHIVO()
+			menu()
+		elif op == "4":
+			desencriptarARCHIVO()
+			menu()
+		elif op == "5":
+			Generador_Key()
+			menu()
+		elif op == "6":
+			setKey()
+			menu()
+		elif op == "00":
+			print "[!] Terminado Secure Msj..."
+			sleep(.5)
+			sys.exit()
+		else:
+			print "[!] Opcion incorrecta pruebe denuevo...\n"
+			sleep(1.2)
+			menu()
     
-        except KeyboardInterrupt:
-               print "\n[*] Ok, Saliendo de Secure Msj..."
-               sleep(.5)
-               sys.exit()
+	except KeyboardInterrupt:
+		print "\n[*] Ok, Saliendo de Secure Msj..."
+		sleep(.5)
+		sys.exit()
 
 # Como el modulo no se esta importanto a otro programa comprobamos que que corre solo y corremos el menu principal.
 if __name__ == "__main__":
     menu()
+
